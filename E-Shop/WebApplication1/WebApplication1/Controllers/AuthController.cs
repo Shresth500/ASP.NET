@@ -12,20 +12,20 @@ namespace WebApplication1.Controllers;
 public class AuthController(IAuthRepo repo,IMapper mapper) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserDto request)
+    public async Task<IActionResult> Register([FromBody] UserDto request, CancellationToken token)
     {
-        var findEmail = await repo.findEmail(request.Email);
+        var findEmail = await repo.findEmail(request.Email,token);
         if (findEmail)
             return BadRequest("Email Already exists");
-        var data = await repo.createUserAsync(request);
+        var data = await repo.createUserAsync(request,token);
         if (data == null)
             return BadRequest("Something went wrong");
         return Ok("User is registered, pleas login");
     }
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginUserRequestDto request) 
+    public async Task<IActionResult> Login([FromBody] LoginUserRequestDto request, CancellationToken token) 
     {
-        var userData = await repo.checkEmailExists(request.Email);
+        var userData = await repo.checkEmailExists(request.Email,token);
         if (userData == null)
             return NotFound("Email doesn't exist");
         var passwordCheck = repo.checkPasswordAsync(userData, request.Password);

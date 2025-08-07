@@ -13,9 +13,9 @@ namespace WebApplication1.Repository;
 public class AuthRepo(ApplicationDbContext context,IConfiguration configuration) : IAuthRepo
 {
 
-    public async Task<User> checkEmailExists(string Email)
+    public async Task<User> checkEmailExists(string Email, CancellationToken token)
     {
-        var data = await context.User.FirstOrDefaultAsync(x => x.Email == Email.ToLower());
+        var data = await context.User.FirstOrDefaultAsync(x => x.Email == Email.ToLower(),token);
         return data!;
     }
 
@@ -42,7 +42,7 @@ public class AuthRepo(ApplicationDbContext context,IConfiguration configuration)
         return 2;
     }
 
-    public async Task<User> createUserAsync(UserDto userData)
+    public async Task<User> createUserAsync(UserDto userData, CancellationToken token)
     {
         var newUser = new User
         {
@@ -52,16 +52,16 @@ public class AuthRepo(ApplicationDbContext context,IConfiguration configuration)
         };
         var hashpassword = new PasswordHasher<User>().HashPassword(newUser, userData.Password);
         newUser.PasswordHash = hashpassword;
-        await context.User.AddAsync(newUser);
-        await context.SaveChangesAsync();
+        await context.User.AddAsync(newUser,token);
+        await context.SaveChangesAsync(token);
         return newUser;
     }
 
 
 
-    public async Task<bool> findEmail(string email)
+    public async Task<bool> findEmail(string email, CancellationToken token)
     {
-        var data = await context.User.FirstOrDefaultAsync(x => x.Email == email);
+        var data = await context.User.FirstOrDefaultAsync(x => x.Email == email, token);
         if (data is null)
             return false;
         return true;
@@ -105,7 +105,6 @@ public class AuthRepo(ApplicationDbContext context,IConfiguration configuration)
             expires:DateTime.Now.AddDays(2),
             signingCredentials:credentials
             );
-        //return new JwtSecurityTokenHandler().WriteToken(token);
         return new TokensDto
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),

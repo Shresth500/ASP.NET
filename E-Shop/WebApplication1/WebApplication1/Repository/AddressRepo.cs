@@ -7,7 +7,7 @@ namespace WebApplication1.Repository;
 
 public class AddressRepo(ApplicationDbContext context) : IAddressRepo
 {
-    public async Task<Address> AddAddressAsync(AddressDto address, int id)
+    public async Task<Address> AddAddressAsync(AddressDto address, int id, CancellationToken token)
     {
         var data = new Address
         {
@@ -18,37 +18,38 @@ public class AddressRepo(ApplicationDbContext context) : IAddressRepo
             PostalCode = address.PostalCode,
             Country = address.Country,
         };
-        await context.Address.AddAsync(data);
-        await context.SaveChangesAsync();
+        await context.Address.AddAsync(data,token);
+        await context.SaveChangesAsync(token);
         return data;
     }
-    public async Task DeleteAddressAsync(int AddressId, int userid)
+    public async Task DeleteAddressAsync(int AddressId, int userid, CancellationToken token)
     {
-        var data = await context.Address.FindAsync(AddressId);
+        var data = await context.Address.FindAsync(AddressId, token);
         if (data is null) throw new Exception("Address not available");
         if (data.UserId != userid) throw new Exception("UnAuthorized");
         context.Remove(data!);
         await context.SaveChangesAsync();
     }
-    public async Task<PagedResult<Address>> findAddressAsync(PaginationQuerDto paginationQuerDto, int userId)
+    public async Task<PagedResult<Address>> findAddressAsync(PaginationQuerDto paginationQuerDto, int userId, CancellationToken token)
     {
         var query = context.Address!
-            .Where(x => x.UserId == userId);
+            .Where(x => x.UserId == userId)
+            .AsNoTracking();
 
-        var totalCount = await query.CountAsync();
-        var addressData = await query.Skip((paginationQuerDto.PageNumber - 1) * paginationQuerDto.PageSize).Take(paginationQuerDto.PageSize).ToListAsync();
+        var totalCount = await query.CountAsync(token);
+        var addressData = await query.Skip((paginationQuerDto.PageNumber - 1) * paginationQuerDto.PageSize).Take(paginationQuerDto.PageSize).ToListAsync(token);
         return new PagedResult<Address> { TotalCount = totalCount, Items = addressData };
     }
 
-    public async Task<Address> findAddressByIdAsync(int id, int userId)
+    public async Task<Address> findAddressByIdAsync(int id, int userId, CancellationToken token)
     {
-        var data = await context.Address.FindAsync(id, userId);
+        var data = await context.Address.FindAsync(id, userId,token);
         if (data is null) throw new Exception("Address not found");
         return data;
     }
-    public async Task UpdateAddressAsync(AddressDto address, int AddressId, int userid)
+    public async Task UpdateAddressAsync(AddressDto address, int AddressId, int userid, CancellationToken token)
     {
-        var data = await context.Address.FindAsync(AddressId);
+        var data = await context.Address.FindAsync(AddressId, token);
         if (data is null) throw new Exception("Address not available");
         if (data.UserId != userid) throw new Exception("UnAuthorized");
         data!.Street = address.Street;
@@ -56,6 +57,6 @@ public class AddressRepo(ApplicationDbContext context) : IAddressRepo
         data!.State = address.State;
         data!.PostalCode = address.PostalCode;
         data!.Country = address.Country;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(token);
     }
 }

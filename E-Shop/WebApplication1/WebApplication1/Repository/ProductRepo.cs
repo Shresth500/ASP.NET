@@ -9,7 +9,7 @@ namespace WebApplication1.Repository;
 public class ProductRepo(IWebHostEnvironment webHostEnvironment, ApplicationDbContext context, IHttpContextAccessor httpContextAccessor) : IProductRepo
 {
 
-    public async Task<Product> addProductAsync(ProductRequestDto product,int userId)
+    public async Task<Product> addProductAsync(ProductRequestDto product,int userId, CancellationToken token)
     {
         var productListImages = new List<ProductImage>();
         var productData = new Product
@@ -22,8 +22,8 @@ public class ProductRepo(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
             ProductImages = productListImages,
             UserId = userId
         };
-        await context.Product.AddAsync(productData);
-        await context.SaveChangesAsync();
+        await context.Product.AddAsync(productData,token);
+        await context.SaveChangesAsync(token);
         var productImages = product.ProductImages.ToList();
         foreach (var image in productImages)
         {
@@ -36,7 +36,7 @@ public class ProductRepo(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
             var localfilepath = Path.Combine(folderPath, fullFileName);
 
             using var stream = new FileStream(localfilepath, FileMode.Create);
-            await image.Image.CopyToAsync(stream);
+            await image.Image.CopyToAsync(stream, token);
 
             var urlFilepath = $"{httpContextAccessor.HttpContext!.Request.Scheme}://" +
                               $"{httpContextAccessor.HttpContext!.Request.Host}" +
@@ -54,35 +54,35 @@ public class ProductRepo(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
             productListImages.Add(imageProduct);
         }
 
-        await context.ProductImages.AddRangeAsync(productListImages);
-
-        await context.SaveChangesAsync();
+        await context.ProductImages.AddRangeAsync(productListImages, token);
+        await context.SaveChangesAsync(token);
         return productData;
     }
 
-    public async Task<Product> getProductByIdAsync(int ProductId)
+    public async Task<Product> getProductByIdAsync(int ProductId, CancellationToken token)
     {
         var data = await context.Product
             .Include(a => a.ProductImages)
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == ProductId);
+            .SingleOrDefaultAsync(x => x.Id == ProductId, token);
         if (data == null)
             throw new Exception("Data not found");
         return data;
     }
 
-    public async Task<PagedResult<Product>> getProductsAsync(PaginationQuerDto paginationQuer)
+    public async Task<PagedResult<Product>> getProductsAsync(PaginationQuerDto paginationQuer, CancellationToken token)
     {
         var productData = await context.Product
             .Where(a => a.isApproved==paginationQuer.IsApproved)
+            .AsNoTracking()
             .Skip((paginationQuer.PageNumber - 1) * paginationQuer.PageSize)
             .Take(paginationQuer.PageSize)
-            .Include(x => x.ProductImages).ToListAsync();
+            .Include(x => x.ProductImages).ToListAsync(token);
         var totalCount = productData.Count;
         return new PagedResult<Product> { Items = productData,TotalCount = totalCount};
     }
 
-    public async Task<Product> updateProductAsync(ProductRequestDto product,int userid, int Id)
+    public async Task<Product> updateProductAsync(ProductRequestDto product,int userid, int Id,CancellationToken token)
     {
         var data = await context.Product.Include(a => a.ProductImages).FirstOrDefaultAsync(x => x.Id == Id);
         if (data == null)
@@ -109,7 +109,7 @@ public class ProductRepo(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
             var localfilepath = Path.Combine(folderPath, fullFileName);
 
             using var stream = new FileStream(localfilepath, FileMode.Create);
-            await image.Image.CopyToAsync(stream);
+            await image.Image.CopyToAsync(stream,token);
 
             var urlFilepath = $"{httpContextAccessor.HttpContext!.Request.Scheme}://" +
                               $"{httpContextAccessor.HttpContext!.Request.Host}" +
@@ -127,11 +127,11 @@ public class ProductRepo(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
             newProductImage.Add(imageProduct);
         }
         data.ProductImages = newProductImage;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(token);
         return data;
     }
 
-    public async Task<ProductImage> UploadProductImagesAsync(int ProductId, ProductImage Image)
+    public async Task<ProductImage> UploadProductImagesAsync(int ProductId, ProductImage Image, CancellationToken token)
     {
         var folderPath = Path.Combine(webHostEnvironment.ContentRootPath, "Images", ProductId.ToString());
         Directory.CreateDirectory(folderPath); // ensure folder exists
@@ -140,11 +140,11 @@ public class ProductRepo(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
         var localfilepath = Path.Combine(folderPath, fileName);
 
         using var stream = new FileStream(localfilepath, FileMode.Create);
-        await Image.Image.CopyToAsync(stream);
+        await Image!.Image!.CopyToAsync(stream, token);
         var urlFilepath = $"{httpContextAccessor.HttpContext!.Request.Scheme}://{httpContextAccessor.HttpContext!.Request.Host}{httpContextAccessor.HttpContext.Request.PathBase}/Images/{ProductId}/{Image.ImageName}{Image.FileExtension}";
         Image.FilePath = urlFilepath;
         await context.ProductImages.AddAsync(Image);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(token);
         return Image;
     }
 

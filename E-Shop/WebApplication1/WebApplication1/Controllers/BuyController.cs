@@ -14,18 +14,18 @@ namespace WebApplication1.Controllers;
 public class BuyController(IUserProductRepo repo,IMapper mapper) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> BuyProduct([FromQuery] BuyProductQueryDto buyProductQueryDto, [FromQuery] int addressid)
+    public async Task<IActionResult> BuyProduct([FromQuery] BuyProductQueryDto buyProductQueryDto, [FromQuery] int addressid, CancellationToken token)
     {
         var id = User!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-        var data = await repo.BuyProduct(int.Parse(id), buyProductQueryDto.ProductId, buyProductQueryDto.Quantity,addressid);
+        var data = await repo.BuyProduct(int.Parse(id), buyProductQueryDto.ProductId, buyProductQueryDto.Quantity,addressid,token);
         var order = mapper.Map<OrderDto>(data);
         return Ok(order);
     }
     [HttpGet]
-    public async Task<IActionResult> GetOrders([FromQuery] PaginationQuerDto paginationQuer) 
+    public async Task<IActionResult> GetOrders([FromQuery] PaginationQuerDto paginationQuer,CancellationToken token) 
     {
         var id = int.Parse(User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var data = await repo.GetOrderListAsync(paginationQuer, id);
+        var data = await repo.GetOrderListAsync(paginationQuer, id,token);
         var orderedProduct = mapper.Map<List<OrderDto>>(data.Items);
         return Ok(new PaginatedOrderResponse<OrderDto>{PageSize = paginationQuer.PageSize,PageNumber = paginationQuer.PageNumber,Count = data.TotalCount,Orders = orderedProduct});
     }

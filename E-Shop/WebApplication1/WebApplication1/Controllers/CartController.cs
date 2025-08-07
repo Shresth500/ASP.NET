@@ -11,29 +11,25 @@ namespace WebApplication1.Controllers;
 public class CartController(IUserProductRepo repo,IMapper mapper) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CartProducts([FromQuery] int productid, [FromQuery] int quantity)
+    public async Task<IActionResult> CartProducts([FromQuery] int productid, [FromQuery] int quantity, CancellationToken token)
     {
-        var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (id == null)
-            return Unauthorized("Unauthorized person cannot buy a product");
-        var data = await repo.AddToCart(int.Parse(id), productid, quantity);
+        var id = User!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var data = await repo.AddToCart(int.Parse(id), productid,token, quantity);
         return Ok(data);
     }
     [HttpGet]
-    public async Task<IActionResult> GetCart([FromQuery] PaginationQuerDto paginationQuer)
+    public async Task<IActionResult> GetCart([FromQuery] PaginationQuerDto paginationQuer, CancellationToken token)
     {
-        var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (id == null) return Unauthorized();
-        var data = await repo.GetCartListAsync(paginationQuer, int.Parse(id));
+        var id = User!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var data = await repo.GetCartListAsync(paginationQuer, int.Parse(id),token);
         var response = mapper.Map<List<CartDto>>(data.Items);
         return Ok(new PaginatedOrderResponse<CartDto>{ PageNumber = paginationQuer.PageNumber,PageSize = paginationQuer.PageSize,Count = data.TotalCount,Orders = response});
     }
     [HttpPost("proceed-to-buy")]
-    public async Task<IActionResult> ProceedToBuy([FromQuery] int addressid)
+    public async Task<IActionResult> ProceedToBuy([FromQuery] int addressid, CancellationToken token)
     {
-        var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (id is null) return Unauthorized();
-        var order = await repo.BuyFromCart(int.Parse(id),addressid);
+        var id = User!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var order = await repo.BuyFromCart(int.Parse(id),addressid,token);
         return Ok();
     }
 

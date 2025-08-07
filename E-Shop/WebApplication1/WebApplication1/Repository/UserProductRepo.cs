@@ -7,7 +7,7 @@ namespace WebApplication1.Repository;
 
 public class UserProductRepo(ApplicationDbContext context) : IUserProductRepo
 {
-    public async Task<List<Cart>> AddToCart(int userId, int productId, int quantity = 1)
+    public async Task<List<Cart>> AddToCart(int userId, int productId,CancellationToken token, int quantity = 1)
     {
         var data = await context.Cart.Where(x => x.UserId == userId).ToListAsync();
 
@@ -39,10 +39,9 @@ public class UserProductRepo(ApplicationDbContext context) : IUserProductRepo
         return await context.Cart.Where(x => x.UserId == userId).ToListAsync();
     }
 
-    public async Task<Order> BuyFromCart(int userId,int addressid)
+    public async Task<Order> BuyFromCart(int userId,int addressid, CancellationToken token)
     {
         using var transaction = await context.Database.BeginTransactionAsync();
-
         try
         {
             var cartItems = await context.Cart
@@ -97,7 +96,7 @@ public class UserProductRepo(ApplicationDbContext context) : IUserProductRepo
             throw;
         }
     }
-    public async Task<Order> BuyProduct(int Id, int productId, int Quantity,int addressid)
+    public async Task<Order> BuyProduct(int Id, int productId, int Quantity,int addressid, CancellationToken token)
     {
         var productdetails = await context.Product.Where(x => x.Id == productId).FirstOrDefaultAsync();
         if (Quantity > productdetails!.Quantity)
@@ -123,41 +122,43 @@ public class UserProductRepo(ApplicationDbContext context) : IUserProductRepo
         return order;
     }
 
-    public Task<Cart> GetCartByIdAsync(int id, int UserId)
+    public Task<Cart> GetCartByIdAsync(int id, int UserId, CancellationToken token)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<PagedResult<Cart>> GetCartListAsync(PaginationQuerDto paginationQuerDto, int id)
+    public async Task<PagedResult<Cart>> GetCartListAsync(PaginationQuerDto paginationQuerDto, int id, CancellationToken token)
     {
         var query = context.Cart!
             .Where(x => x.UserId == id)
             .Include(b => b.Product)
-            .ThenInclude(c => c.ProductImages);
+            .ThenInclude(c => c!.ProductImages)
+            .AsNoTracking();
 
-        var totalCount = await query.CountAsync();
-        var item = await query.Skip((paginationQuerDto.PageNumber - 1) * paginationQuerDto.PageSize).Take(paginationQuerDto.PageSize).ToListAsync();
+        var totalCount = await query.CountAsync(token);
+        var item = await query.Skip((paginationQuerDto.PageNumber - 1) * paginationQuerDto.PageSize).Take(paginationQuerDto.PageSize).ToListAsync(token);
         return new PagedResult<Cart> { TotalCount = totalCount, Items = item };
     }
 
-    public Task<Order> GetOrderByIdAsync(int id, int UserId)
+    public Task<Order> GetOrderByIdAsync(int id, int UserId, CancellationToken token)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<PagedResult<Order>> GetOrderListAsync(PaginationQuerDto paginationQuerDto, int userId)
+    public async Task<PagedResult<Order>> GetOrderListAsync(PaginationQuerDto paginationQuerDto, int userId, CancellationToken token)
     {
         var query = context.Order!
             .Where(a => a.UserId == userId)!
             .Include(b => b.OrderItems)!
                 .ThenInclude(c => c.Product)
-                    .ThenInclude(d => d.ProductImages);
+                    .ThenInclude(d => d!.ProductImages)
+                    .AsNoTracking();
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(token);
 
         var items = await query
             .Skip((paginationQuerDto.PageNumber - 1) * paginationQuerDto.PageSize)
-            .Take(paginationQuerDto.PageSize).ToListAsync();
+            .Take(paginationQuerDto.PageSize).ToListAsync(token);
 
         return new PagedResult<Order>
         {
@@ -165,13 +166,13 @@ public class UserProductRepo(ApplicationDbContext context) : IUserProductRepo
             TotalCount = totalCount
         };
     }
-    public async Task RemoveFromCart(int userId, int productId, int quantity = 1)
+    public async Task RemoveFromCart(int userId, int productId, CancellationToken token, int quantity = 1)
     {
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be at least 1.");
 
         var cart = await context.Cart
-            .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId,token);
 
         if (cart == null)
             throw new Exception("Cart item not found.");
@@ -184,9 +185,9 @@ public class UserProductRepo(ApplicationDbContext context) : IUserProductRepo
             cart.Quantity -= quantity;
             cart.Price -= unitPrice * quantity;
         }
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(token);
     }
-    public Task<Cart> UpdateCart(int Id, int productId, int quantity)
+    public Task<Cart> UpdateCart(int Id, int productId,CancellationToken token, int quantity)
     {
         throw new NotImplementedException();
     }
