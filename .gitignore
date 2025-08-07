@@ -1,93 +1,93 @@
 # Build results
-BuyAndSellAnyThink/WebApplication1/bin/
-BuyAndSellAnyThink/WebApplication1/obj/
-BuyAndSellAnyThink/WebApplication1/out/
+E-Shop/WebApplication1/bin/
+E-Shop/WebApplication1/obj/
+E-Shop/WebApplication1/out/
 
 # Visual Studio files
-BuyAndSellAnyThink/WebApplication1/.vs/
-BuyAndSellAnyThink/WebApplication1/.vscode/
-BuyAndSellAnyThink/WebApplication1/*.user
-BuyAndSellAnyThink/WebApplication1/*.suo
-BuyAndSellAnyThink/WebApplication1/*.userosscache
-BuyAndSellAnyThink/WebApplication1/*.sln.docstates
+E-Shop/WebApplication1/.vs/
+E-Shop/WebApplication1/.vscode/
+E-Shop/WebApplication1/*.user
+E-Shop/WebApplication1/*.suo
+E-Shop/WebApplication1/*.userosscache
+E-Shop/WebApplication1/*.sln.docstates
 
 # Rider
-BuyAndSellAnyThink/WebApplication1/.idea/
-BuyAndSellAnyThink/WebApplication1/*.sln.iml
+E-Shop/WebApplication1/.idea/
+E-Shop/WebApplication1/*.sln.iml
 
 # ASP.NET Scaffolding
-BuyAndSellAnyThink/WebApplication1/ScaffoldingReadMe.txt
+E-Shop/WebApplication1/ScaffoldingReadMe.txt
 
 # User-specific files
-BuyAndSellAnyThink/WebApplication1/*.user
-BuyAndSellAnyThink/WebApplication1/*.userprefs
+E-Shop/WebApplication1/*.user
+E-Shop/WebApplication1/*.userprefs
 
 # Mono
-BuyAndSellAnyThink/WebApplication1/mono_crash.*
+E-Shop/WebApplication1/mono_crash.*
 
 # Windows image file caches
-BuyAndSellAnyThink/WebApplication1/Thumbs.db
-BuyAndSellAnyThink/WebApplication1/ehthumbs.db
+E-Shop/WebApplication1/Thumbs.db
+E-Shop/WebApplication1/ehthumbs.db
 
 # macOS
-BuyAndSellAnyThink/WebApplication1/.DS_Store
+E-Shop/WebApplication1/.DS_Store
 
 # Linux
-BuyAndSellAnyThink/WebApplication1/*~
+E-Shop/WebApplication1/*~
 
 # Logs
-BuyAndSellAnyThink/WebApplication1/*.log
+E-Shop/WebApplication1/*.log
 
 # NuGet
-BuyAndSellAnyThink/WebApplication1/*.nupkg
-BuyAndSellAnyThink/WebApplication1/packages/
-BuyAndSellAnyThink/WebApplication1/*.snupkg
-BuyAndSellAnyThink/WebApplication1/project.lock.json
-BuyAndSellAnyThink/WebApplication1/project.fragment.lock.json
-BuyAndSellAnyThink/WebApplication1/artifacts/
+E-Shop/WebApplication1/*.nupkg
+E-Shop/WebApplication1/packages/
+E-Shop/WebApplication1/*.snupkg
+E-Shop/WebApplication1/project.lock.json
+E-Shop/WebApplication1/project.fragment.lock.json
+E-Shop/WebApplication1/artifacts/
 
 # DotCover
-BuyAndSellAnyThink/WebApplication1/*.dotCover
+E-Shop/WebApplication1/*.dotCover
 
 # Test results
-BuyAndSellAnyThink/WebApplication1/TestResults/
-BuyAndSellAnyThink/WebApplication1/*.trx
-BuyAndSellAnyThink/WebApplication1/*.coverage
-BuyAndSellAnyThink/WebApplication1/*.coveragexml
+E-Shop/WebApplication1/TestResults/
+E-Shop/WebApplication1/*.trx
+E-Shop/WebApplication1/*.coverage
+E-Shop/WebApplication1/*.coveragexml
 
 # Publish
-BuyAndSellAnyThink/WebApplication1/.publish/
-BuyAndSellAnyThink/WebApplication1/*.pubxml
-BuyAndSellAnyThink/WebApplication1/*.publishproj
+E-Shop/WebApplication1/.publish/
+E-Shop/WebApplication1/*.pubxml
+E-Shop/WebApplication1/*.publishproj
 
 # Azure Pipelines
-BuyAndSellAnyThink/WebApplication1/.azdo/
+E-Shop/WebApplication1/.azdo/
 
 # Global JetBrains Rider settings
-BuyAndSellAnyThink/WebApplication1/.idea/
+E-Shop/WebApplication1/.idea/
 
 # Backup & temporary files
-BuyAndSellAnyThink/WebApplication1/*.bak
-BuyAndSellAnyThink/WebApplication1/*.tmp
-BuyAndSellAnyThink/WebApplication1/*.swp
+E-Shop/WebApplication1/*.bak
+E-Shop/WebApplication1/*.tmp
+E-Shop/WebApplication1/*.swp
 
 # Entity Framework Migrations snapshot
-BuyAndSellAnyThink/WebApplication1/*Migrations/*.Designer.cs
-BuyAndSellAnyThink/WebApplication1/*Migrations/*.resx
+E-Shop/WebApplication1/*Migrations/*.Designer.cs
+E-Shop/WebApplication1/*Migrations/*.resx
 
 # Local secrets
-BuyAndSellAnyThink/WebApplication1/secrets.json
+E-Shop/WebApplication1/secrets.json
 
 # Resharper
-BuyAndSellAnyThink/WebApplication1/_ReSharper*/
-BuyAndSellAnyThink/WebApplication1/*.[Rr]e[Ss]harper
+E-Shop/WebApplication1/_ReSharper*/
+E-Shop/WebApplication1/*.[Rr]e[Ss]harper
 
 # Tye
-BuyAndSellAnyThink/WebApplication1/.tye/
+E-Shop/WebApplication1/.tye/
 
 # # Docker files
-# BuyAndSellAnyThink/WebApplication1/**/Dockerfile.*
-# BuyAndSellAnyThink/WebApplication1/docker-compose.*
+# E-Shop/WebApplication1/**/Dockerfile.*
+# E-Shop/WebApplication1/docker-compose.*
 
 # # Others
 # Generated_Code/
